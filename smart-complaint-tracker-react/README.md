@@ -118,7 +118,7 @@ Socket.IO is used for live updates:
 complaintsUpdated → updates complaint list
 notificationsUpdated → updates notifications
 📊 Features by Role
-Student/User
+Student
 Register/Login
 Raise complaint
 View own complaints
