@@ -1,4 +1,4 @@
-# Smart Complaint & Issue Tracking System - React Version
+# Smart Complaint & Issue Tracking System 
 
 This version uses normal React with `react-scripts`, not Vite.
 
