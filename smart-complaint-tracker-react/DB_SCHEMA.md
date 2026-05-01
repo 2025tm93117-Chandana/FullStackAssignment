@@ -121,7 +121,7 @@ Example Document
   "updatedAt": "2026-04-28T11:00:00Z"
 }
 🔗 Relationships
-User (student/user)
+User (student)
    │
    └─────── Complaint (createdBy)
 
@@ -172,6 +172,7 @@ db.notifications.find({
   recipientUser: ObjectId("staff_id"),
   isRead: false
 })
+
 ⚠️ Validation Rules
 Email must be unique
 userId must be unique
@@ -181,12 +182,3 @@ Only admin can assign complaints
 Staff can update only assigned complaints
 User can mark only own complaint as resolved
 Notifications are generated automatically
-✅ Summary
-
-The database design ensures:
-
-Proper normalization of data
-Efficient querying using indexes
-Role-based relationships
-Scalable complaint tracking system
-Real-time notification support
