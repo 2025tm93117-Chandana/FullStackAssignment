@@ -447,7 +447,7 @@ function App() {
                     });
                   }}
                 >
-                  <option value="user">Student / User</option>
+                  <option value="user">Student</option>
                   <option value="staff">Staff</option>
                   <option value="admin">Admin</option>
                 </select>
