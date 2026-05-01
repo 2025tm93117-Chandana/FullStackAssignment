@@ -98,6 +98,7 @@ Passwords are hashed using bcrypt
 JWT used for authentication
 Protected routes require Authorization header
 Role-based authorization implemented
+
 🔄 Data Flow
 Complaint Creation Flow
 User → Frontend → Backend → MongoDB
@@ -107,18 +108,21 @@ User → Frontend → Backend → MongoDB
                  Socket.IO broadcast
                          ↓
                  Admin UI updates
+
 Complaint Assignment Flow
 Admin → Backend → Update Complaint
                       ↓
                Create Notification
                       ↓
                Notify Staff (Socket.IO)
+
 Complaint Resolution Flow
 User/Staff → Backend → Update Status
                          ↓
                   Notification (Admin)
                          ↓
                  Real-time UI update
+
 📦 Deployment Architecture
 Development Environment
 Component	URL
@@ -127,6 +131,7 @@ Frontend	http://localhost:3000
 Backend	http://localhost:5001
 
 Database	mongodb://127.0.0.1:27017
+
 ⚙️ Technology Stack
 Layer	Technology
 Frontend	React.js
@@ -137,6 +142,7 @@ Auth	JWT
 Security	bcryptjs
 Real-time	Socket.IO
 API Calls	Axios
+
 📌 Key Design Decisions
 Role-Based Access Control
 Ensures security and proper permissions
@@ -146,12 +152,3 @@ Modular Backend Structure
 Separation of concerns (auth, complaint, notification)
 MongoDB Usage
 Flexible schema for rapid development
-✅ Summary
-
-The architecture ensures:
-
-Scalability through modular backend design
-Real-time user experience using Socket.IO
-Secure authentication using JWT
-Clean separation of frontend, backend, and database layers
-Role-based access control for different users
