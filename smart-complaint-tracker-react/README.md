@@ -1,59 +1,137 @@
-# Smart Complaint & Issue Tracking System 
+# Smart Complaint & Issue Tracking System  
+Course: SE ZG503 Full Stack Application Development  
+Student: Chandana Sajja | ID: 2025TM93117 | EMAIL: 2025tm93117@wilp.bits-pilani.ac.in 
 
-This version uses normal React with `react-scripts`, not Vite.
+Full-stack complaint tracking application with a React frontend and Node.js backend with real-time updates and notifications.
 
-## Demo Login
+---
 
-- Admin: `admin@test.com` / `123456`
-- Staff: `staff@test.com` / `123456`
-- Student/User: `student@test.com` / `123456`
+# 🚀 What this project includes
 
-## Install
+- JWT-based authentication (login, register, reset password)
+- Role-based access (Student/User, Staff, Admin)
+- Complaint creation with detailed location input
+- Admin complaint management (view, assign, delete)
+- Staff complaint handling (view assigned, update status)
+- Target resolution date tracking
+- Notification system:
+  - New complaint → Admin
+  - Complaint resolved → Admin
+  - Complaint assigned → Staff
+- Real-time updates using Socket.IO (no page refresh)
+- Role-based dashboards with filters and search
 
-Open terminal in the main project folder:
 
-```bash
-npm.cmd run install-all
-```
+# 🛠 Tech Stack
 
-If that gives any issue, install manually:
+Frontend: React.js, Axios  
+Backend: Node.js, Express.js  
+Database: MongoDB, Mongoose  
+Authentication: JWT, bcryptjs  
+Real-time: Socket.IO  
+Dev Tools: Nodemon  
 
-```bash
+---
+
+# 📁 Project Structure
+
+smart-complaint-tracker-react/
+├── frontend/
+│   ├── public/
+│   ├── src/
+|   ├── package-lock.json
+│   └── package.json
+│
+├── backend/
+│   ├── server.js
+│   ├── .env
+│   ├── package-lock.json
+│   └── package.json
+|   
+├── API_OVERVIEW.md
+├── ARCHITECTURE.md
+├── DB_SCHEMA.md
+├── package.json
+└── README.md
+
+⚙️ Prerequisites
+Node.js 18+
+npm
+MongoDB (local or cloud)
+🔧 Environment Setup
+
+Create a .env file in backend:
+
+PORT=5001
+MONGO_URI=mongodb://127.0.0.1:27017/smart_complaint_tracker
+JWT_SECRET=secret123
+📦 Install Dependencies
+npm install
+cd frontend
+npm install
+cd ../backend
+npm install
+▶️ Run the Project
+Start Backend
 cd backend
-npm.cmd install
-cd ../frontend
-npm.cmd install
-```
+npm run dev
 
-## Run
+Backend runs at:
 
-Open two terminals.
+http://localhost:5001
+Start Frontend
+cd frontend
+npm start
 
-Terminal 1:
+Frontend runs at:
 
-```bash
-cd smart-complaint-tracker-react/backend
-npm.cmd run dev
-```
+http://localhost:3000
+🔑 Demo Credentials
+👨‍💼 Admin
 
-Terminal 2:
+Email: admin@test.com
 
-```bash
-cd smart-complaint-tracker-react/frontend
-npm.cmd start
-```
+ID: ADM001
+Password: 123456
 
-Frontend: http://localhost:3000
-Backend: http://localhost:5001
+👨‍🔧 Staff
 
-## Features
+Email: staff@test.com
 
-- React frontend using `react-scripts`
-- Node.js + Express backend
-- Login/signup with roles: user, staff, admin
-- Complaint CRUD
-- Admin assigns complaints to staff
-- Staff updates complaint status
-- Search and filters
-- Sample data included
-- Real-time updates using Socket.IO without refresh
+ID: STF001
+Password: 123456
+
+👨‍🎓 Student/User
+
+Email: student@test.com
+
+ID: STD001
+Password: 123456
+
+📡 API & Documentation
+API Overview: API_OVERVIEW.md
+Architecture: ARCHITECTURE.md
+Database Schema: DB_SCHEMA.md
+
+🔔 Real-Time Features
+Socket.IO is used for live updates:
+complaintsUpdated → updates complaint list
+notificationsUpdated → updates notifications
+📊 Features by Role
+Student/User
+Register/Login
+Raise complaint
+View own complaints
+Mark complaint as resolved
+
+Admin
+View all complaints
+Assign complaints to staff
+Set target resolution date
+Delete complaints
+View notifications
+
+Staff
+View assigned complaints
+Update complaint status
+Receive assignment notifications
