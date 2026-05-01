@@ -34,84 +34,64 @@ Dev Tools: Nodemon
 ---
 
 # 📁 Project Structure
+smart-complaint-tracker-react/  
+frontend/ - React app  
+backend/ - authorization, handles all the functionalities  
+Readme.md  
+Architecture.md  
+DB_SCHEMA.md  
+API_OVERVIEW.md
 
-smart-complaint-tracker-react/
-├── frontend/
-│   ├── public/
-│   ├── src/
-|   ├── package-lock.json
-│   └── package.json
-│
-├── backend/
-│   ├── server.js
-│   ├── .env
-│   ├── package-lock.json
-│   └── package.json
-|   
-├── API_OVERVIEW.md
-├── ARCHITECTURE.md
-├── DB_SCHEMA.md
-├── package.json
-└── README.md
-
-⚙️ Prerequisites
-Node.js 18+
-npm
+⚙️ Prerequisites  
+Node.js 18+  
+npm  
 MongoDB (local or cloud)
+
 🔧 Environment Setup
+Create a .env file in backend:  
+PORT=5001  
+MONGO_URI=mongodb://127.0.0.1:27017/smart_complaint_tracker  
+JWT_SECRET=secret123 
 
-Create a .env file in backend:
+📦 Install Dependencies  
+cd frontend  
+npm install  
+cd ../backend  
+npm install  
+▶️ Run the Project  
+Start Backend  
+cd backend  
+npm run dev  
 
-PORT=5001
-MONGO_URI=mongodb://127.0.0.1:27017/smart_complaint_tracker
-JWT_SECRET=secret123
-📦 Install Dependencies
-npm install
-cd frontend
-npm install
-cd ../backend
-npm install
-▶️ Run the Project
-Start Backend
-cd backend
-npm run dev
+Backend runs at:  
+http://localhost:5001  
+Start Frontend  
+cd frontend  
+npm start  
 
-Backend runs at:
+Frontend runs at:  
+http://localhost:3000  
 
-http://localhost:5001
-Start Frontend
-cd frontend
-npm start
+🔑 Demo Credentials  
+👨‍💼 Admin  
+Email: admin@test.com  
+ID: ADM001  
+Password: 123456  
 
-Frontend runs at:
+👨‍🔧 Staff  
+Email: staff@test.com  
+ID: STF001  
+Password: 123456  
 
-http://localhost:3000
-🔑 Demo Credentials
-👨‍💼 Admin
-
-Email: admin@test.com
-
-ID: ADM001
-Password: 123456
-
-👨‍🔧 Staff
-
-Email: staff@test.com
-
-ID: STF001
-Password: 123456
-
-👨‍🎓 Student/User
-
-Email: student@test.com
-
-ID: STD001
-Password: 123456
+👨‍🎓 Student/User  
+Email: student@test.com  
+ID: STD001  
+Password: 123456  
 
 📡 API & Documentation
-API Overview: API_OVERVIEW.md
-Architecture: ARCHITECTURE.md
-Database Schema: DB_SCHEMA.md
+- API Overview: API_OVERVIEW.md
+- Architecture: ARCHITECTURE.md
+- Database Schema: DB_SCHEMA.md
 
 🔔 Real-Time Features
 Socket.IO is used for live updates:
@@ -119,19 +99,19 @@ complaintsUpdated → updates complaint list
 notificationsUpdated → updates notifications
 📊 Features by Role
 Student
-Register/Login
-Raise complaint
-View own complaints
-Mark complaint as resolved
+- Register/Login
+- Raise complaint
+- View own complaints
+- Mark complaint as resolved
 
 Admin
-View all complaints
-Assign complaints to staff
-Set target resolution date
-Delete complaints
-View notifications
+- View all complaints
+- Assign complaints to staff
+- Set target resolution date
+- Delete complaints
+- View notifications
 
 Staff
-View assigned complaints
-Update complaint status
-Receive assignment notifications
+- View assigned complaints
+- Update complaint status
+- Receive assignment notifications
