@@ -16,7 +16,7 @@ Full-stack complaint tracking application with a React frontend and Node.js back
 - Target resolution date tracking
 - Notification system:
   - New complaint → Admin
-  - Complaint resolved → Admin
+  - Complaint resolved → Admin and Student
   - Complaint assigned → Staff
 - Real-time updates using Socket.IO (no page refresh)
 - Role-based dashboards with filters and search
