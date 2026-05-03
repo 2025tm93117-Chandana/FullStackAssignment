@@ -94,8 +94,7 @@ function App() {
   };
 
   const loadNotifications = useCallback(async () => {
-    if (!token || !user || (user.role !== 'admin' && user.role !== 'staff')) return;
-
+  if (!token || !user) return;
     try {
       const res = await axios.get(`${API}/notifications`, {
         headers: authHeaders
@@ -124,9 +123,8 @@ function App() {
         setStaff(staffRes.data);
       }
 
-      if (user.role === 'admin' || user.role === 'staff') {
         loadNotifications();
-      }
+      
     } catch (e) {
       const msg = e.response?.data?.message || 'Failed to load data';
       setMessage(msg);
@@ -336,7 +334,8 @@ function App() {
   async function markNotificationRead(id) {
     try {
       await axios.put(`${API}/notifications/${id}/read`, {}, { headers: authHeaders });
-      loadNotifications();
+      setMessage('Notification marked as read');
+      await loadNotifications();
     } catch (e) {
       setMessage(e.response?.data?.message || 'Failed to mark notification as read');
     }
@@ -447,7 +446,7 @@ function App() {
                     });
                   }}
                 >
-                  <option value="user">Student</option>
+                  <option value="user">Student / User</option>
                   <option value="staff">Staff</option>
                   <option value="admin">Admin</option>
                 </select>
@@ -597,8 +596,7 @@ function App() {
           <div><b>{stats.resolved}</b><span>Resolved</span></div>
         </section>
 
-        {(user.role === 'admin' || user.role === 'staff') && (
-          <div className="adminTabs">
+          {(user.role === 'admin' || user.role === 'staff' || user.role === 'user' || user.role === 'student') && (          <div className="adminTabs">
             <button
               className={activeTab === 'complaints' ? 'activeTab' : ''}
               onClick={() => setActiveTab('complaints')}
@@ -617,11 +615,14 @@ function App() {
 
         {message && <p className="msg">{message}</p>}
 
-        {(user.role === 'admin' || user.role === 'staff') && activeTab === 'notifications' && (
-          <section className="panel">
+          {(user.role === 'admin' || user.role === 'staff' || user.role === 'user' || user.role === 'student') && activeTab === 'notifications' && (          <section className="panel">
             <h3>
-              {user.role === 'admin' ? 'Admin Notifications' : 'Staff Notifications'}{' '}
-              <span className="live">● Live</span>
+                {user.role === 'admin'
+                  ? 'Admin Notifications'
+                  : user.role === 'staff'
+                  ? 'Staff Notifications'
+                  : 'My Notifications'}{' '}
+                <span className="live">● Live</span>
             </h3>
 
             <div className="filters">
@@ -635,6 +636,7 @@ function App() {
                 {user.role === 'admin' && <option value="NEW_REQUEST">New Requests</option>}
                 {user.role === 'admin' && <option value="USER_RESOLVED">Marked Resolved</option>}
                 {user.role === 'staff' && <option value="STAFF_ASSIGNED">Staff Assigned</option>}
+                <option value="STAFF_RESOLVED">Staff Resolved</option>
               </select>
 
               <input
@@ -651,13 +653,16 @@ function App() {
                 <div className={`card ${!n.isRead ? 'unreadNotification' : ''}`} key={n.id}>
                   <div className="cardHead">
                     <h4>
-                      {n.type === 'NEW_REQUEST'
-                        ? 'New Complaint Request'
-                        : n.type === 'USER_RESOLVED'
-                        ? 'User Marked Resolved'
-                        : 'Complaint Assigned'}
-                    </h4>
-
+                        {n.type === 'NEW_REQUEST'
+                          ? 'New Complaint Request'
+                          : n.type === 'USER_RESOLVED'
+                          ? 'User Marked Resolved'
+                          : n.type === 'STAFF_ASSIGNED'
+                          ? 'Complaint Assigned'
+                          : n.type === 'STAFF_RESOLVED'
+                          ? 'Complaint Resolved'
+                          : 'Notification'}
+                    </h4> 
                     <span className={`badge ${n.isRead ? 'Resolved' : 'Open'}`}>
                       {n.isRead ? 'Read' : 'New'}
                     </span>
@@ -906,12 +911,6 @@ function App() {
                           <option>In Progress</option>
                           <option>Resolved</option>
                         </select>
-                      )}
-
-                      {(user.role === 'user' || user.role === 'student') && c.status !== 'Resolved' && (
-                        <button onClick={() => updateStatus(c.id, 'Resolved')}>
-                          Mark as Resolved
-                        </button>
                       )}
 
                       {user.role === 'admin' && (
