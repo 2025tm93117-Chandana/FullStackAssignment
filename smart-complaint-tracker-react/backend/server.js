@@ -60,15 +60,14 @@ const notificationSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ['NEW_REQUEST', 'USER_RESOLVED', 'STAFF_ASSIGNED'],
+      enum: ['NEW_REQUEST', 'USER_RESOLVED', 'STAFF_ASSIGNED', 'STAFF_RESOLVED'],
       required: true
     },
     message: { type: String, required: true },
     complaint: { type: mongoose.Schema.Types.ObjectId, ref: 'Complaint' },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     recipientUser: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
-    recipientRole: { type: String, enum: ['admin', 'staff'], required: true },
-    isRead: { type: Boolean, default: false }
+    recipientRole: { type: String, enum: ['admin', 'staff', 'user'], required: true },    isRead: { type: Boolean, default: false }
   },
   { timestamps: true }
 );
@@ -302,7 +301,7 @@ app.get('/api/users/staff', auth, allowRoles('admin'), async (req, res) => {
 
 /* NOTIFICATIONS */
 
-app.get('/api/notifications', auth, allowRoles('admin', 'staff'), async (req, res) => {
+app.get('/api/notifications', auth, allowRoles('admin', 'staff', 'user', 'student'), async (req, res) => {
   try {
     let query = {};
 
@@ -312,6 +311,10 @@ app.get('/api/notifications', auth, allowRoles('admin', 'staff'), async (req, re
 
     if (req.user.role === 'staff') {
       query = { recipientRole: 'staff', recipientUser: req.user.id };
+    }
+
+    if (req.user.role === 'user' || req.user.role === 'student') {
+      query = { recipientRole: 'user', recipientUser: req.user.id };
     }
 
     const notifications = await Notification.find(query)
@@ -348,7 +351,7 @@ app.get('/api/notifications', auth, allowRoles('admin', 'staff'), async (req, re
   }
 });
 
-app.put('/api/notifications/:id/read', auth, allowRoles('admin', 'staff'), async (req, res) => {
+app.put('/api/notifications/:id/read', auth, allowRoles('admin', 'staff', 'user', 'student'), async (req, res) => {
   try {
     const notification = await Notification.findById(req.params.id);
 
@@ -357,7 +360,7 @@ app.put('/api/notifications/:id/read', auth, allowRoles('admin', 'staff'), async
     }
 
     if (
-      req.user.role === 'staff' &&
+      (req.user.role === 'staff' || req.user.role === 'user' || req.user.role === 'student') &&
       notification.recipientUser?.toString() !== req.user.id
     ) {
       return res.status(403).json({ message: 'Access denied' });
@@ -369,12 +372,15 @@ app.put('/api/notifications/:id/read', auth, allowRoles('admin', 'staff'), async
     io.emit('notificationsUpdated');
 
     return res.json({ message: 'Notification marked as read' });
-  } catch {
-    return res.status(500).json({ message: 'Failed to update notification' });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Failed to update notification',
+      error: err.message
+    });
   }
 });
 
-app.delete('/api/notifications/:id', auth, allowRoles('admin', 'staff'), async (req, res) => {
+app.delete('/api/notifications/:id', auth, allowRoles('admin', 'staff', 'user', 'student'), async (req, res) => {
   try {
     const notification = await Notification.findById(req.params.id);
 
@@ -383,7 +389,7 @@ app.delete('/api/notifications/:id', auth, allowRoles('admin', 'staff'), async (
     }
 
     if (
-      req.user.role === 'staff' &&
+      (req.user.role === 'staff' || req.user.role === 'user' || req.user.role === 'student') &&
       notification.recipientUser?.toString() !== req.user.id
     ) {
       return res.status(403).json({ message: 'Access denied' });
@@ -394,8 +400,11 @@ app.delete('/api/notifications/:id', auth, allowRoles('admin', 'staff'), async (
     io.emit('notificationsUpdated');
 
     return res.json({ message: 'Notification deleted' });
-  } catch {
-    return res.status(500).json({ message: 'Failed to delete notification' });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Failed to delete notification',
+      error: err.message
+    });
   }
 });
 
@@ -594,27 +603,20 @@ app.put('/api/complaints/:id/status', auth, async (req, res) => {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const complaint = await Complaint.findById(req.params.id).populate('createdBy', 'name userId email');
+    const complaint = await Complaint.findById(req.params.id)
+      .populate('createdBy', 'name userId email')
+      .populate('assignedTo', 'name userId email');
 
     if (!complaint) {
       return res.status(404).json({ message: 'Complaint not found' });
     }
 
-    if (req.user.role === 'staff' && complaint.assignedTo?.toString() !== req.user.id) {
+    if (req.user.role === 'staff' && complaint.assignedTo?._id.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Staff can update only assigned complaints' });
     }
 
-    if (
-      (req.user.role === 'user' || req.user.role === 'student') &&
-      complaint.createdBy?._id.toString() !== req.user.id
-    ) {
-      return res.status(403).json({ message: 'You can update only your own complaint' });
-    }
-
     if (req.user.role === 'user' || req.user.role === 'student') {
-      if (status !== 'Resolved') {
-        return res.status(403).json({ message: 'User can only mark complaint as Resolved' });
-      }
+      return res.status(403).json({ message: 'Student cannot update status directly' });
     }
 
     const oldStatus = complaint.status;
@@ -622,16 +624,42 @@ app.put('/api/complaints/:id/status', auth, async (req, res) => {
     await complaint.save();
 
     if (
-      (req.user.role === 'user' || req.user.role === 'student') &&
+      req.user.role === 'staff' &&
       status === 'Resolved' &&
       oldStatus !== 'Resolved'
     ) {
       await Notification.create({
-        type: 'USER_RESOLVED',
-        message: `${complaint.createdBy.name} (${complaint.createdBy.userId}) marked complaint "${complaint.title}" as resolved.`,
+        type: 'STAFF_RESOLVED',
+        message: `${complaint.assignedTo.name} (${complaint.assignedTo.userId}) marked complaint "${complaint.title}" as resolved.`,
         complaint: complaint._id,
-        createdBy: complaint.createdBy._id,
+        createdBy: complaint.assignedTo._id,
         recipientRole: 'admin'
+      });
+
+      await Notification.create({
+        type: 'STAFF_RESOLVED',
+        message: `Your complaint "${complaint.title}" has been marked as resolved by staff ${complaint.assignedTo.name}.`,
+        complaint: complaint._id,
+        createdBy: complaint.assignedTo._id,
+        recipientUser: complaint.createdBy._id,
+        recipientRole: 'user'
+      });
+
+      io.emit('notificationsUpdated');
+    }
+
+    if (
+      req.user.role === 'admin' &&
+      status === 'Resolved' &&
+      oldStatus !== 'Resolved'
+    ) {
+      await Notification.create({
+        type: 'STAFF_RESOLVED',
+        message: `Admin marked complaint "${complaint.title}" as resolved.`,
+        complaint: complaint._id,
+        createdBy: req.user.id,
+        recipientUser: complaint.createdBy._id,
+        recipientRole: 'user'
       });
 
       io.emit('notificationsUpdated');
@@ -643,8 +671,8 @@ app.put('/api/complaints/:id/status', auth, async (req, res) => {
       message: 'Status updated successfully',
       complaint
     });
-  } catch {
-    return res.status(500).json({ message: 'Failed to update status' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to update status', error: err.message });
   }
 });
 
