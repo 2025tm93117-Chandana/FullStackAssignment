@@ -227,11 +227,9 @@ Key fields:
 - `password`
 - `role`
 - `userId`
-- `location`
 
 Supported roles in the schema:
 
-- `user`
 - `student`
 - `staff`
 - `admin`
