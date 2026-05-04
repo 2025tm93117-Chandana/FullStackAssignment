@@ -26,8 +26,6 @@ The current backend accepts these roles:
 - `staff`
 - `admin`
 
-In practice, `user` and `student` are treated similarly for complaint and notification access.
-
 ## 1. Authentication Endpoints
 
 ### 1.1 Sign Up
