@@ -22,7 +22,6 @@ JWTs are issued by the login endpoint and validated by backend middleware.
 
 The current backend accepts these roles:
 
-- `user`
 - `student`
 - `staff`
 - `admin`
